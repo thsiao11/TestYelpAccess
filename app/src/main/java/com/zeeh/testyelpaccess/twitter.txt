@@ -1,0 +1,65 @@
+package com.zeeh.testyelpaccess;
+
+// Documentation for how this code works
+//https://www.youtube.com/watch?v=Il4wJxRzvaU
+//http://twitter4j.org/javadoc/index.html
+//https://dzone.com/articles/android-twitter-api-11
+
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+
+import java.util.List;
+
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.conf.ConfigurationBuilder;
+
+public class MainActivity extends AppCompatActivity {
+
+    private String PROTECTED_RESOURCE_URL = "https://api.twitter.com/1.1/account/verify_credentials.json";
+    private String LOG_TAG = "MainActivity";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState)  {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        new TwitterInfoAsyncTask().execute();
+    }
+
+    class TwitterInfoAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        private String PROTECTED_RESOURCE_URL = "https://api.twitter.com/1.1/account/verify_credentials.json";
+        private final String LOG_TAG = getClass().getSimpleName();
+
+        @Override
+        protected Void doInBackground(Void... param) {
+
+            ConfigurationBuilder cb = new ConfigurationBuilder();
+            cb.setDebugEnabled(true)
+                    .setOAuthConsumerKey("JNxRi8KFulqoe5kTHU7XMeMuK")
+                    .setOAuthConsumerSecret("GKwsHItgui38SRu9jpNAr76CCkYI6w8OSxqtZnb9YQuDnpdFkn")
+                    .setOAuthAccessToken("62108909-8gc9JPKRuHfnL8ELOSfYyBMJ4hzOqIuFNp4zvWfEv")
+                    .setOAuthAccessTokenSecret("DmbXBySnbjZK0RKZqEfJ5glBflJTUpRlp0o3g2SEKBnsx");
+
+            TwitterFactory twitterFactory = new TwitterFactory(cb.build());
+            twitter4j.Twitter twitter =  twitterFactory.getInstance();
+
+            try {
+                List<twitter4j.Status> status = twitter.getHomeTimeline();
+                Log.v(LOG_TAG,"here?");
+
+                for(twitter4j.Status st : status ) {
+                    Log.v(LOG_TAG, st.getUser().getName() + ": "+ st.getText());
+                }
+            } catch (TwitterException e) {
+                Log.e(LOG_TAG,"Twitter Exception: "+ e.toString());
+            }
+
+            return null;
+        }
+
+    }
+}
